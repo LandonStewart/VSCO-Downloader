@@ -12,13 +12,16 @@ import argparse
 cwd = os.getcwd()
 
 visitvsco = {
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9"
+              ",image/webp,image/apng,*/*;q=0.8",
     "Accept-Encoding": "gzip, deflate",
     "Accept-Language": "en-US,en;q=0.9",
     "Connection": "keep-alive",
     "Host": "vsco.co",
     "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/62.0.3202.94 Safari/537.36",
 }
 
 visituserinfo = {
@@ -28,7 +31,9 @@ visituserinfo = {
     "Connection": "keep-alive",
     "Host": "vsco.co",
     "Referer": "http://vsco.co/bob/images/1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/63.0.3239.84 Safari/537.36",
 }
 
 media = {
@@ -38,7 +43,9 @@ media = {
     "Connection": "keep-alive",
     "Host": "vsco.co",
     "Referer": "http://vsco.co/bob/images/1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/62.0.3202.94 Safari/537.36",
     "X-Client-Build": "1",
     "X-Client-Platform": "web",
 }
@@ -66,7 +73,6 @@ class Scraper(object):
         self.totalj = 0
 
     def newSiteId(self):
-        base = "http://vsco.co/"
         res = self.session.get(
             "http://vsco.co/ajxp/%s/2.0/sites?subdomain=%s" %
             (self.uid, self.username))
@@ -101,7 +107,7 @@ class Scraper(object):
                 for future in concurrent.futures.as_completed(future_to_url):
                     part = future_to_url[future]
                     try:
-                        data = future.result()
+                        future.result()
                     except Exception as exc:
                         print('%r crashed %s' % (part, exc))
             os.chdir(os.path.normpath(os.getcwd() + os.sep + os.pardir))
@@ -126,21 +132,22 @@ class Scraper(object):
         os.chdir(path)
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_url = {executor.submit(self.makeListJournal, len(
-                self.jour_found), val): val for val in range(len(self.jour_found))}
+                self.jour_found), val): val for val in
+                range(len(self.jour_found))}
             for future in concurrent.futures.as_completed(future_to_url):
                 val = future_to_url[future]
                 try:
-                    data = future.result()
+                    future.result()
                 except Exception as exc:
                     print('%r crashed %s' % (val, exc))
         self.pbarjlist.close()
 
     def makeListJournal(self, num, loc):
         for item in self.jour_found[loc]["body"]:
-            # if os.path.exists(os.path.join(os.getcwd(), self.jour_found[loc]["permalink"])):
-            #     if '%s.jpg' % str(item["content"][0]["id"]) in os.listdir(os.path.join(os.getcwd(),self.jour_found[loc]["permalink"])):
+            # if os.path.exists(os.path.join(os.getcwd(), self.jour_found[loc]["permalink"])): # noqa 501
+            #     if '%s.jpg' % str(item["content"][0]["id"]) in os.listdir(os.path.join(os.getcwd(),self.jour_found[loc]["permalink"])): # noqa 501
             #         continue
-            #     if '%s.mp4' % str(item["content"][0]["id"])in os.listdir(os.path.join(os.getcwd(),self.jour_found[loc]["permalink"])):
+            #     if '%s.mp4' % str(item["content"][0]["id"])in os.listdir(os.path.join(os.getcwd(),self.jour_found[loc]["permalink"])): # noqa 501
             #         continue
             if item['type'] == "image":
                 if os.path.exists(
@@ -154,7 +161,8 @@ class Scraper(object):
                             self.jour_found[loc]["permalink"])):
                         continue
                 self.works[loc].append(
-                    ["http://%s" % item["content"][0]["responsive_url"], item["content"][0]["id"], "img"])
+                    ["http://%s" % item["content"][0]["responsive_url"],
+                     item["content"][0]["id"], "img"])
             elif item['type'] == "video":
                 if os.path.exists(
                     os.path.join(
@@ -167,7 +175,8 @@ class Scraper(object):
                             self.jour_found[loc]["permalink"])):
                         continue
                 self.works[loc].append(
-                    ["http://%s" % item["content"][0]["video_url"], item["content"][0]["id"], "vid"])
+                    ["http://%s" % item["content"][0]["video_url"],
+                     item["content"][0]["id"], "vid"])
             elif item['type'] == "text":
                 if os.path.exists(
                     os.path.join(
@@ -223,7 +232,7 @@ class Scraper(object):
                     unit=' posts'):
                 liste = future_to_url[future]
                 try:
-                    data = future.result()
+                    future.result()
                 except Exception as exc:
                     print('%r crashed %s' % (liste, exc))
 
@@ -239,7 +248,7 @@ class Scraper(object):
             for future in concurrent.futures.as_completed(future_to_url):
                 num = future_to_url[future]
                 try:
-                    data = future.result()
+                    future.result()
                 except Exception as exc:
                     print('%r crashed %s' % (num, exc))
         self.pbar.close()
@@ -256,15 +265,15 @@ class Scraper(object):
         while count > 0:
             for url in z:
                 if '%s.jpg' % str(url["upload_date"])[
-                        :-3] in os.listdir() or '%s.mp4' % str(url["upload_date"])[:-3] in os.listdir():
+                        :-3] in os.listdir() or '%s.mp4' % str(url["upload_date"])[:-3] in os.listdir(): # noqa 501
                     continue
                 if url['is_video'] is True:
                     self.imagelist.append(
-                        ["http://%s" % url["video_url"], str(url["upload_date"])[:-3], True])
+                        ["http://%s" % url["video_url"], str(url["upload_date"])[:-3], True]) # noqa 501
                     self.pbar.update()
                 else:
                     self.imagelist.append(
-                        ["http://%s" % url["responsive_url"], str(url["upload_date"])[:-3], False])
+                        ["http://%s" % url["responsive_url"], str(url["upload_date"])[:-3], False]) # noqa 501
                     self.pbar.update()
             num += 5
             z = self.session.get(
@@ -304,15 +313,12 @@ def main():
     if command.lower() in ['exit', 'quit']:
         return False
     elif command.lower() == "help":
-        help_text = """
---getImages       -i   Downloads all of the user's images/videos
---getJournal      -j   Downloads all of the images/videos in the user's journals and creates a directory for each journal
---multiple        -m   Downloads multiple user's images/videos
---multipleJournal -mj  Downloads multiple user's journals
---all             -a   Downloads multiple users journals and images, will download journal if they have one
-        """
-        print(help_text)
-        print('For detailed help to https://github.com/NicholasDawson/VSCO-Downloader\n')
+        print("""--getImages       -i   Downloads all of the user's images/videos""") # noqa E501
+        print("""--getJournal      -j   Downloads all of the images/videos in the user's journals and creates a directory for each journal""") # noqa E501
+        print("""--multiple        -m   Downloads multiple user's images/videos""") # noqa E501
+        print("""--multipleJournal -mj  Downloads multiple user's journals""") # noqa E501
+        print("""--all             -a   Downloads multiple users journals and images, will download journal if they have one""") # noqa E501
+        print('For detailed help to https://github.com/NicholasDawson/VSCO-Downloader\n') # noqa E501
         return True
 
     parser = argparse.ArgumentParser(
@@ -410,7 +416,7 @@ def main():
     return True
 
 
-welcome_msg = """
+welcome_msg = '''
  _    _______ __________
 | |  / / ___// ____/ __ \\
 | | / /\__ \/ /   / / / /
@@ -420,7 +426,7 @@ welcome_msg = """
   / _ \___ _    _____  / /__  ___ ____/ /__ ____
  / // / _ \ |/|/ / _ \/ / _ \/ _ `/ _  / -_) __/
 /____/\___/__,__/_//_/_/\___/\_,_/\_,_/\__/_/
-"""
+''' # noqa W605
 print(welcome_msg)
 
 while True:
